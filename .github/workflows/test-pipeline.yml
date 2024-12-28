@@ -29,14 +29,25 @@ jobs:
       run: |
         python test_script.py
     
-    - name: Start Streamlit Dashboard with ngrok
-      id: start_dashboard
+    - name: Start Streamlit app with ngrok and capture URL
       run: |
-        # Start the Streamlit app with ngrok and capture the output (URL)
-        public_url=$(python run_app.py)
-        echo "Public URL: $public_url"
-        # Set the output so it can be accessed by later steps
-        echo "::set-output name=dashboard_url::$public_url"
+        # Start Streamlit app in the background
+        nohup streamlit run dashboard.py &
+
+        # Install ngrok if it's not installed
+        curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc
+        echo "deb https://ngrok-agent.s3.amazonaws.com/deb stable main" | sudo tee /etc/apt/sources.list.d/ngrok-stable.list
+        sudo apt-get update
+        sudo apt-get install ngrok
+
+        # Start ngrok and capture the public URL
+        ngrok http 8501 &
+
+        # Wait for the tunnel to be established and extract the public URL
+        sleep 10  # Adjust sleep time if needed
+        PUBLIC_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r .tunnels[0].public_url)
+        echo "Public URL: $PUBLIC_URL"
+        echo "::set-output name=dashboard_url::$PUBLIC_URL"
     
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -44,7 +55,3 @@ jobs:
         name: test-results
         path: test_results.json
         retention-days: 90
-    
-    - name: Display public URL for Dashboard
-      run: |
-        echo "Dashboard is accessible at: ${{ steps.start_dashboard.outputs.dashboard_url }}"

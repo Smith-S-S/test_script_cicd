@@ -39,6 +39,10 @@ jobs:
         unzip ngrok.zip
         sudo mv ngrok /usr/local/bin/ngrok
 
+        # Set ngrok authentication token
+        echo "2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23" > ~/.ngrok2/ngrok.yml
+        echo "authtoken: 2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23" >> ~/.ngrok2/ngrok.yml
+
         # Start ngrok and capture the public URL
         ngrok http 8501 &
 

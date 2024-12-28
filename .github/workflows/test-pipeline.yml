@@ -29,9 +29,19 @@ jobs:
       run: |
         python test_script.py
     
+    - name: Start Streamlit Dashboard with ngrok
+      run: |
+        python run_app.py &
+        sleep 5  # Allow some time for ngrok to establish the tunnel
+        
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: test_results.json
         retention-days: 90
+    
+    - name: Display public URL for Dashboard
+      run: |
+        curl -s http://127.0.0.1:5000/  # Test if the server is accessible (replace with actual ngrok URL if needed)
+        echo "Dashboard is accessible at: $(curl -s http://127.0.0.1:5000/)"

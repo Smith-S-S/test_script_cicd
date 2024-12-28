@@ -3,27 +3,24 @@ name: Deploy Streamlit App with Ngrok
 on:
   push:
     branches:
-      - main  # Trigger on changes to the main branch
+      - main
   pull_request:
     branches:
-      - main  # Trigger on pull requests to the main branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository code
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Set up Python environment
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
-    # Install dependencies (Streamlit, ngrok, etc.)
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -31,36 +28,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y unzip curl jq
 
-    # Install ngrok and configure it
     - name: Install ngrok
       run: |
         curl -s https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -o ngrok.zip
         unzip ngrok.zip
         sudo mv ngrok /usr/local/bin/ngrok
 
-    # Set up ngrok authentication with your authtoken
-    - name: Set up ngrok authentication
+    - name: Authenticate ngrok with authtoken
       run: |
-        mkdir -p ~/.ngrok2
-        echo "authtoken: 2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23" > ~/.ngrok2/ngrok.yml
+        ngrok authtoken 2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23
 
-    # Start the Streamlit app in the background
     - name: Start Streamlit app
       run: |
         nohup streamlit run dashboard.py &
 
-    # Start ngrok to expose the app on port 8501 (default Streamlit port)
     - name: Start ngrok and get public URL
       run: |
         ngrok http 8501 &
-        sleep 10  # Give ngrok a few seconds to start
+        sleep 10
         PUBLIC_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r .tunnels[0].public_url)
         echo "Public URL: $PUBLIC_URL"
         echo "DASHBOARD_URL=$PUBLIC_URL" >> $GITHUB_ENV
 
-    # Optionally, you can upload the public URL as an artifact, or use it in the next steps
     - name: Upload public URL as an artifact
       run: echo "DASHBOARD_URL=$PUBLIC_URL" >> $GITHUB_ENV
-
-    # You can now use the `DASHBOARD_URL` in subsequent steps or jobs
-    # For example, notify your team with a Slack notification or other actions

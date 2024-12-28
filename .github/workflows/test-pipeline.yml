@@ -39,9 +39,11 @@ jobs:
         unzip ngrok.zip
         sudo mv ngrok /usr/local/bin/ngrok
 
+        # Create the ngrok2 directory if it doesn't exist
+        mkdir -p ~/.ngrok2
+
         # Set ngrok authentication token
-        echo "2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23" > ~/.ngrok2/ngrok.yml
-        echo "authtoken: 2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23" >> ~/.ngrok2/ngrok.yml
+        echo "authtoken: 2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23" > ~/.ngrok2/ngrok.yml
 
         # Start ngrok and capture the public URL
         ngrok http 8501 &
@@ -50,7 +52,9 @@ jobs:
         sleep 10  # Adjust sleep time if needed
         PUBLIC_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r .tunnels[0].public_url)
         echo "Public URL: $PUBLIC_URL"
-        echo "::set-output name=dashboard_url::$PUBLIC_URL"
+        
+        # Set the dashboard URL as an environment variable to be used in later steps
+        echo "DASHBOARD_URL=$PUBLIC_URL" >> $GITHUB_ENV
     
     - name: Upload test results
       uses: actions/upload-artifact@v4

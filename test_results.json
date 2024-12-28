@@ -1,0 +1,30 @@
+[
+  {
+    "test_name": "test_login",
+    "status": "PASS",
+    "duration": 0.7609391492778892,
+    "timestamp": "2024-12-28T12:54:09.925916",
+    "error_message": null
+  },
+  {
+    "test_name": "test_database",
+    "status": "PASS",
+    "duration": 0.6941163187294815,
+    "timestamp": "2024-12-28T12:54:09.932883",
+    "error_message": null
+  },
+  {
+    "test_name": "test_api",
+    "status": "FAIL",
+    "duration": 1.051304277478672,
+    "timestamp": "2024-12-28T12:54:09.937453",
+    "error_message": "Connection timeout"
+  },
+  {
+    "test_name": "test_logout",
+    "status": "PASS",
+    "duration": 0.9278886519861445,
+    "timestamp": "2024-12-28T12:54:09.941523",
+    "error_message": null
+  }
+]

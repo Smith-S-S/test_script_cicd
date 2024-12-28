@@ -44,8 +44,8 @@ jobs:
 
     - name: Start ngrok and get public URL
       run: |
-        ngrok http 8501 &
-        sleep 10
+        ngrok http 8501 --log=stdout &
+        sleep 10  # Allow ngrok to start up
         PUBLIC_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | jq -r .tunnels[0].public_url)
         echo "Public URL: $PUBLIC_URL"
         echo "DASHBOARD_URL=$PUBLIC_URL" >> $GITHUB_ENV

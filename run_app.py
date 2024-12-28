@@ -7,8 +7,8 @@ ngrok.set_auth_token("2qpRWeIX1oVNuMoOacmRWFXqyXQ_2ZDQHJLZK5FyB8iXJpe23")
 # Start ngrok tunnel on port 8501 (Streamlit's default port)
 public_url = ngrok.connect("8501", "http")  # Correct configuration for ngrok
 
-# Print the public URL so it can be captured by the GitHub Actions workflow
-print(f"Public URL: {public_url}")
+# Print the public URL only
+print(public_url)
 
 # Run Streamlit app
 subprocess.run(["streamlit", "run", "dashboard.py"])

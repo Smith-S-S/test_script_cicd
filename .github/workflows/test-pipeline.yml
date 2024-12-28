@@ -32,10 +32,10 @@ jobs:
     - name: Start Streamlit Dashboard with ngrok
       id: start_dashboard
       run: |
-        # Start the Streamlit app with ngrok
+        # Start the Streamlit app with ngrok and capture the output (URL)
         public_url=$(python run_app.py)
         echo "Public URL: $public_url"
-        # Set the output to be used in later steps
+        # Set the output so it can be accessed by later steps
         echo "::set-output name=dashboard_url::$public_url"
     
     - name: Upload test results

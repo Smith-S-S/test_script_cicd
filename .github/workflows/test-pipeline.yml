@@ -35,33 +35,3 @@ jobs:
         name: test-results
         path: test_results.json
         retention-days: 90
-
-  deploy-dashboard:
-    needs: test
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Download test results
-      uses: actions/download-artifact@v4
-      with:
-        name: test-results
-        path: artifacts/test-results
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install streamlit pandas plotly
-    
-    - name: Deploy to Streamlit Cloud
-      env:
-        STREAMLIT_API_KEY: ${{ secrets.STREAMLIT_API_KEY }}
-      run: |
-        # Instructions for deployment will vary based on your hosting choice
-        echo "Deploy to your chosen platform here"

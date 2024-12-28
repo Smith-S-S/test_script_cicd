@@ -30,10 +30,14 @@ jobs:
         python test_script.py
     
     - name: Start Streamlit Dashboard with ngrok
+      id: start_dashboard
       run: |
-        python run_app.py &
-        sleep 5  # Allow some time for ngrok to establish the tunnel
-        
+        # Start the Streamlit app with ngrok
+        public_url=$(python run_app.py)
+        echo "Public URL: $public_url"
+        # Set the output to be used in later steps
+        echo "::set-output name=dashboard_url::$public_url"
+    
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
@@ -43,5 +47,4 @@ jobs:
     
     - name: Display public URL for Dashboard
       run: |
-        curl -s http://127.0.0.1:5000/  # Test if the server is accessible (replace with actual ngrok URL if needed)
-        echo "Dashboard is accessible at: $(curl -s http://127.0.0.1:5000/)"
+        echo "Dashboard is accessible at: ${{ steps.start_dashboard.outputs.dashboard_url }}"

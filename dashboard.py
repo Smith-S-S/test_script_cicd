@@ -2,28 +2,27 @@ import streamlit as st
 import json
 import pandas as pd
 import plotly.express as px
+import requests
 from datetime import datetime
-from pathlib import Path
 
-def load_test_results():
-    try:
-        with open('test_results.json', 'r') as f:
-            data = json.load(f)
-        return pd.DataFrame(data)
-    except:
+# Function to fetch test results from a remote URL (like GitHub)
+def get_test_results():
+    url = "https://raw.githubusercontent.com/Smith-S-S/test_script_cicd/main/test_results.json"  # Change URL to your raw GitHub link
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        return pd.DataFrame(response.json())
+    else:
+        st.error(f"Failed to fetch test results. Status code: {response.status_code}")
         return pd.DataFrame()
 
 def main():
     st.title("Test Results Dashboard")
     
-    # Add refresh button
-    if st.button('Refresh Data'):
-        st.experimental_rerun()
-    
-    df = load_test_results()
+    df = get_test_results()  # Use the get_test_results function to fetch the data
     
     if df.empty:
-        st.warning("No test results found. Please ensure test_results.json exists.")
+        st.warning("No test results found")
         return
     
     # Convert timestamp to datetime

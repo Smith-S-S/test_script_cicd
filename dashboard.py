@@ -3,22 +3,38 @@ import json
 import pandas as pd
 import plotly.express as px
 from datetime import datetime
+from pathlib import Path
 
 def load_test_results():
-    try:
-        with open('test_results.json', 'r') as f:
-            data = json.load(f)
-        return pd.DataFrame(data)
-    except:
-        return pd.DataFrame()
+    # Look for test results in current directory and common CI artifact locations
+    possible_paths = [
+        'test_results.json',
+        'artifacts/test-results/test_results.json',
+        '../artifacts/test-results/test_results.json'
+    ]
+    
+    for path in possible_paths:
+        if Path(path).exists():
+            try:
+                with open(path, 'r') as f:
+                    data = json.load(f)
+                return pd.DataFrame(data)
+            except:
+                continue
+    
+    return pd.DataFrame()
 
 def main():
     st.title("Test Results Dashboard")
     
+    # Add refresh button
+    if st.button('Refresh Data'):
+        st.experimental_rerun()
+    
     df = load_test_results()
     
     if df.empty:
-        st.warning("No test results found")
+        st.warning("No test results found. Please ensure test_results.json exists in the correct location.")
         return
     
     # Convert timestamp to datetime
